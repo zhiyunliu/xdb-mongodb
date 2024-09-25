@@ -1,0 +1,33 @@
+{
+    "app": {
+        "mode": "release",
+        "ip_mask": "192.168"
+    },
+    "dbs": {
+        "mongodb": {
+            "proto": "mongodb",
+            "conn": "mongodb://192.168.1.158:27017/?directConnection=true&appName=xdbsamples",
+            "max_open": 5,
+            "max_idle": 5,
+            "life_time": 600
+        }
+    },
+    "servers": {
+        "apiserver": {
+            "config": {
+                "addr": ":8188",
+                "status": "start",
+                "read_timeout": 10,
+                "write_timeout": 10
+            },
+            "middlewares": [
+                {
+                    "name": "metrics",
+                    "data": {
+                        "proto": "prometheus"
+                    }
+                }
+            ]
+        }
+    }
+}
