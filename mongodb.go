@@ -64,6 +64,8 @@ func (s *mongoResolver) Resolve(connName string, setting config.Config, opts ...
 func (s *mongoResolver) buildMongodbOpts(cfg *xdb.Config) *options.ClientOptions {
 	opt := options.Client()
 	opt.ApplyURI(cfg.Conn)
-	opt.SetAppName(global.AppName)
+	if len(*opt.AppName) <= 0 {
+		opt.SetAppName(global.AppName)
+	}
 	return opt
 }
