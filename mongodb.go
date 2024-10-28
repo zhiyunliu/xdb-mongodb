@@ -50,7 +50,11 @@ func (s *mongoResolver) Resolve(connName string, setting config.Config, opts ...
 
 	ctx := context.Background()
 
-	client, err := mongo.Connect(ctx, s.buildMongodbOpts(cfg.Cfg))
+	mgOpts, err := s.buildMongodbOpts(cfg.Cfg)
+	if err != nil {
+		return
+	}
+	client, err := mongo.Connect(ctx, mgOpts)
 	if err != nil {
 		return nil, fmt.Errorf("mongo.Connect(%s):%w", connName, err)
 	}
@@ -61,11 +65,15 @@ func (s *mongoResolver) Resolve(connName string, setting config.Config, opts ...
 	}, nil
 }
 
-func (s *mongoResolver) buildMongodbOpts(cfg *xdb.Config) *options.ClientOptions {
-	opt := options.Client()
-	opt.ApplyURI(cfg.Conn)
-	if len(*opt.AppName) <= 0 {
-		opt.SetAppName(global.AppName)
+func (s *mongoResolver) buildMongodbOpts(cfg *xdb.Config) (opts *options.ClientOptions, err error) {
+	opts = options.Client()
+	opts.ApplyURI(cfg.Conn)
+	if err = opts.Validate(); err != nil {
+		return opts, fmt.Errorf("mongo.Validate:%w", err)
 	}
-	return opt
+
+	if opts.AppName != nil && len(*opts.AppName) <= 0 {
+		opts.SetAppName(global.AppName)
+	}
+	return
 }
