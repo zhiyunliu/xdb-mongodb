@@ -6,10 +6,7 @@
     "dbs": {
         "mongodb": {
             "proto": "mongodb",
-            "conn": "mongodb://192.168.1.158:27017/?directConnection=true&appName=xdbsamples",
-            "max_open": 5,
-            "max_idle": 5,
-            "life_time": 600
+            "conn": "mongodb://192.168.1.158:27017/test?directConnection=true&appName=xdbsamples"
         }
     },
     "servers": {

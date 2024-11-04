@@ -6,7 +6,8 @@ replace github.com/zhiyunliu/xdb-mongodb => ../../xdb-mongodb
 
 require (
 	github.com/zhiyunliu/glue v0.5.22
-	github.com/zhiyunliu/xdb-mongodb v0.0.0-00010101000000-000000000000
+	github.com/zhiyunliu/xdb-mongodb v0.1.0
+	go.mongodb.org/mongo-driver v1.17.0
 )
 
 require (
@@ -65,7 +66,6 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	github.com/zhiyunliu/golibs v0.2.5 // indirect
-	go.mongodb.org/mongo-driver v1.17.0 // indirect
 	go.opentelemetry.io/otel v1.9.0 // indirect
 	go.opentelemetry.io/otel/trace v1.9.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect

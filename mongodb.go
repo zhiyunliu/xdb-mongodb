@@ -10,6 +10,7 @@ import (
 	"github.com/zhiyunliu/glue/xdb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
 )
 
 func init() {
@@ -50,7 +51,7 @@ func (s *mongoResolver) Resolve(connName string, setting config.Config, opts ...
 
 	ctx := context.Background()
 
-	mgOpts, err := s.buildMongodbOpts(cfg.Cfg)
+	mgOpts, databaseName, err := s.buildMongodbOpts(cfg.Cfg)
 	if err != nil {
 		return
 	}
@@ -60,18 +61,24 @@ func (s *mongoResolver) Resolve(connName string, setting config.Config, opts ...
 	}
 
 	return &mongodb{
-		client: client,
-		cfg:    cfg,
+		client:   client,
+		database: client.Database(databaseName),
+		cfg:      cfg,
 	}, nil
 }
 
-func (s *mongoResolver) buildMongodbOpts(cfg *xdb.Config) (opts *options.ClientOptions, err error) {
+func (s *mongoResolver) buildMongodbOpts(cfg *xdb.Config) (opts *options.ClientOptions, databaseName string, err error) {
+	cs, err := connstring.ParseAndValidate(cfg.Conn)
+	if err != nil {
+		err = fmt.Errorf("connstring.Validate:%w", err)
+		return
+	}
+	databaseName = cs.Database
 	opts = options.Client()
 	opts.ApplyURI(cfg.Conn)
 	if err = opts.Validate(); err != nil {
-		return opts, fmt.Errorf("mongo.Validate:%w", err)
+		return opts, databaseName, fmt.Errorf("mongo.Validate:%w", err)
 	}
-
 	if opts.AppName != nil && len(*opts.AppName) <= 0 {
 		opts.SetAppName(global.AppName)
 	}

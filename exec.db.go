@@ -9,8 +9,9 @@ import (
 )
 
 type mongodb struct {
-	cfg    *contribxdb.Setting
-	client *mongo.Client
+	cfg      *contribxdb.Setting
+	client   *mongo.Client
+	database *mongo.Database
 }
 
 func (db *mongodb) Query(ctx context.Context, sql string, input any) (data xdb.Rows, err error) {
@@ -59,7 +60,7 @@ func (db *mongodb) Close() (err error) {
 }
 
 func (db *mongodb) GetImpl() (impl any) {
-	return db.client
+	return db.database
 }
 
 func (db *mongodb) Transaction(callback xdb.TransactionCallback) (err error) {

@@ -4,6 +4,7 @@ import (
 	"github.com/zhiyunliu/glue"
 	"github.com/zhiyunliu/glue/context"
 	"github.com/zhiyunliu/glue/server/api"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -15,8 +16,7 @@ func BindAPI(srv *api.Server) {
 		val := ctx.Request().Query().Values()
 
 		dbObj := glue.DB("mongodb")
-		client := dbObj.GetImpl().(*mongo.Client)
-		db := client.Database("test")
+		db := dbObj.GetImpl().(*mongo.Database)
 		collection := db.Collection("x", options.Collection())
 
 		if val.Get("c") == "1" {
@@ -43,10 +43,12 @@ func BindAPI(srv *api.Server) {
 		client := dbObj.GetImpl().(*mongo.Client)
 		db := client.Database("test")
 
-		dbRst := db.RunCommand(ctx.Context(), sql)
-		if dbRst.Err() != nil {
-			return dbRst.Err()
-		}
+		filter := bson.D{{Key: "a", Value: 100}}
+
+		dbRst := db.RunCommand(ctx.Context(), bson.D{
+			{Key: "find", Value: "x"},
+			{Key: "filter", Value: filter},
+		})
 
 		result := &DataRow{}
 		err := dbRst.Decode(&result)
@@ -62,9 +64,3 @@ type DataRow struct {
 	A string `json:"a"`
 	B string
 }
-
-var sql = `
-db.collection('x').find({
-  'a': { $eq: 100 }  
-});
-`
