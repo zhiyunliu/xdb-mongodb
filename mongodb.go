@@ -104,16 +104,18 @@ func (s *mongoResolver) buildMongodbOpts(connName string, cfg *xdb.Config) (opts
 			slowCfg.Set(cse.RequestID, cse.Command)
 		},
 		Succeeded: func(ctx context.Context, cse *event.CommandSucceededEvent) {
-			slowCfg.printSlowQuery(ctx, cse.RequestID, cse.Duration, fmt.Sprintf("%s.%s", cse.DatabaseName, cse.CommandName))
+			slowCfg.printSlowQuery(ctx, cse.RequestID, cse.Duration, cse.DatabaseName)
 		},
 		Failed: func(ctx context.Context, cse *event.CommandFailedEvent) {
-			slowCfg.printSlowQuery(ctx, cse.RequestID, cse.Duration, fmt.Sprintf("%s.%s", cse.DatabaseName, cse.CommandName))
+			slowCfg.printSlowQuery(ctx, cse.RequestID, cse.Duration, cse.DatabaseName)
 		},
 	}
 	opts.SetLoggerOptions(&options.LoggerOptions{
-		Sink: &mongoLogger{},
+		Sink: &mongoLogger{
+			slowCfg: slowCfg,
+		},
 		ComponentLevels: map[options.LogComponent]options.LogLevel{
-			options.LogComponentAll: options.LogLevelDebug,
+			options.LogComponentCommand: options.LogLevelInfo,
 		},
 	})
 	return
