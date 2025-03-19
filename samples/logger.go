@@ -12,6 +12,6 @@ type dbLogger struct {
 func (l dbLogger) Name() string {
 	return l.name
 }
-func (l dbLogger) Log(ctx context.Context, elapsed int64, sql string, args ...interface{}) {
-	fmt.Printf("%s:elapsed:%d, %s\n,args:%+v\n", l.name, elapsed, sql, args)
+func (l dbLogger) Log(ctx context.Context, elapsed int64, connName, sql string, args ...interface{}) {
+	fmt.Printf("%s:elapsed:%d,conn:%s,sql: %s\n,args:%+v\n", l.name, elapsed, sql, args)
 }
