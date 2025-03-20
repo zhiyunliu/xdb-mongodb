@@ -23,7 +23,7 @@ func (l mongoLogger) Error(err error, message string, keysAndValues ...interface
 	if l.slowCfg.logger == nil {
 		return
 	}
-	l.slowCfg.logger.Log(context.Background(), 0, fmt.Sprintf("[%s][%d]%s,err:%s", l.slowCfg.ConnName, 0, message, err.Error()), keysAndValues...)
+	l.slowCfg.logger.Log(context.Background(), 0, l.slowCfg.ConnName, fmt.Sprintf("[%s][%d]%s,err:%s", l.slowCfg.ConnName, 0, message, err.Error()), keysAndValues...)
 }
 
 type slowConfig struct {
@@ -51,7 +51,7 @@ func (slowCfg *slowConfig) printSlowQuery(ctx context.Context, requestId int64, 
 	if slowCfg.slowThreshold <= 0 || timeRange < slowCfg.slowThreshold {
 		return
 	}
-	slowCfg.logger.Log(ctx, timeRange.Milliseconds(), fmt.Sprintf("[%s][%d]%s", slowCfg.ConnName, requestId, query), queryRaw)
+	slowCfg.logger.Log(ctx, timeRange.Milliseconds(), slowCfg.ConnName, fmt.Sprintf("[%s][%d]%s", slowCfg.ConnName, requestId, query), queryRaw)
 }
 
 func (slowCfg *slowConfig) Set(requestId int64, cmd bson.Raw) {
