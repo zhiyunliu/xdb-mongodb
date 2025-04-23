@@ -40,8 +40,7 @@ func BindAPI(srv *api.Server) {
 	srv.Handle("/cmd", func(ctx context.Context) (res any) {
 
 		dbObj := glue.DB("mongodb")
-		client := dbObj.GetImpl().(*mongo.Client)
-		db := client.Database("test")
+		db := dbObj.GetImpl().(*mongo.Database)
 
 		filter := bson.D{{Key: "a", Value: 100}}
 

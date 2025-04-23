@@ -11,7 +11,7 @@ import (
 )
 
 type mongoLogger struct {
-	slowCfg *slowConfig
+	slowCfg *monitorConfig
 }
 
 func (l mongoLogger) Info(level int, message string, keysAndValues ...interface{}) {
@@ -34,33 +34,3 @@ type slowConfig struct {
 	slowThreshold time.Duration
 }
 
-func (slowCfg *slowConfig) printSlowQuery(ctx context.Context, requestId int64, timeRange time.Duration, query string) {
-	if !slowCfg.ShowQueryLog {
-		return
-	}
-	if slowCfg.logger == nil {
-		return
-	}
-
-	queryRaw, ok := slowCfg.cmdCache.Get(requestId)
-	if !ok {
-		return
-	}
-	slowCfg.cmdCache.Remove(requestId)
-
-	if slowCfg.slowThreshold <= 0 || timeRange < slowCfg.slowThreshold {
-		return
-	}
-	slowCfg.logger.Log(ctx, timeRange.Milliseconds(), slowCfg.ConnName, fmt.Sprintf("[%s][%d]%s", slowCfg.ConnName, requestId, query), queryRaw)
-}
-
-func (slowCfg *slowConfig) Set(requestId int64, cmd bson.Raw) {
-	if !slowCfg.ShowQueryLog {
-		return
-	}
-	if slowCfg.logger == nil {
-		return
-	}
-
-	slowCfg.cmdCache.Set(requestId, cmd)
-}

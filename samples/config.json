@@ -6,7 +6,7 @@
     "dbs": {
         "mongodb": {
             "proto": "mongodb",
-            "conn": "mongodb://192.168.1.158:27017/test?directConnection=true&appName=xdbsamples"
+            "conn": "mongodb://47.109.201.142:28128/test?appName=xdbsamples"
         }
     },
     "servers": {
@@ -26,5 +26,11 @@
                 }
             ]
         }
-    }
+    },
+	"opentelemetry":{
+		"insecure":true,
+		"endpoint":"localhost:4318",
+		"sampler_rate":101,
+		"metrics_proto":"prometheus"
+	}
 }
