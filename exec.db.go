@@ -2,11 +2,34 @@ package xdbmongodb
 
 import (
 	"context"
+	"fmt"
 
 	contribxdb "github.com/zhiyunliu/glue/contrib/xdb"
 	"github.com/zhiyunliu/glue/xdb"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+// Test 函数用于验证当前 mongodb 结构体是否实现了 xdb.IDB 接口。
+// 该测试通过创建临时 mongodb 实例并进行接口类型断言来检测接口实现情况。
+//
+// 返回值:
+//
+//	error:
+//	  - 当成功实现 xdb.IDB 接口时返回 nil
+//	  - 当未实现接口时返回包含错误信息的 error 对象
+func Test() error {
+	// 创建临时 mongodb 实例并赋值给空接口变量
+	var tmpdb any = &mongodb{}
+
+	// 尝试将临时对象断言为 xdb.IDB 接口
+	// 成功断言说明已实现接口，返回 nil
+	if _, ok := tmpdb.(xdb.IDB); ok {
+		return nil
+	}
+
+	// 断言失败说明未实现接口，返回错误信息
+	return fmt.Errorf("mongodb.Test():xdb.IDB not implemented")
+}
 
 var _ xdb.IDB = (*mongodb)(nil)
 
