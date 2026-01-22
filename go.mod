@@ -1,13 +1,10 @@
 module github.com/zhiyunliu/xdb-mongodb
 
-go 1.23.7
-
-toolchain go1.24.1
+go 1.24.0
 
 require (
 	github.com/orcaman/concurrent-map/v2 v2.0.1
-	github.com/zhiyunliu/glue v0.7.15
-	github.com/zhiyunliu/stack v1.9.0
+	github.com/zhiyunliu/glue v0.8.9
 	go.mongodb.org/mongo-driver v1.17.0
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/trace v1.35.0
@@ -26,8 +23,9 @@ require (
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
-	github.com/zhiyunliu/golibs v0.3.5 // indirect
-	github.com/zhiyunliu/xbinding v0.1.3 // indirect
+	github.com/zhiyunliu/golibs v0.3.18 // indirect
+	github.com/zhiyunliu/stack v1.10.1 // indirect
+	github.com/zhiyunliu/xbinding v0.1.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel/metric v1.35.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
@@ -36,7 +34,5 @@ require (
 	google.golang.org/protobuf v1.36.5 // indirect
 )
 
-replace github.com/zhiyunliu/glue => ../glue
-replace github.com/zhiyunliu/stack => ../stack
-
-
+// replace github.com/zhiyunliu/glue => ../glue
+// replace github.com/zhiyunliu/stack => ../stack
