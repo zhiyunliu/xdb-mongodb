@@ -54,6 +54,11 @@ func (db *mongodb) Begin() (trans xdb.ITrans, err error) {
 	return
 }
 
+func (db *mongodb) BeginTx(context.Context) (trans xdb.ITrans, err error) {
+	err = NotImplemented
+	return
+}
+
 func (db *mongodb) Close() (err error) {
 	if db.client != nil {
 		return db.client.Disconnect(context.Background())
@@ -65,6 +70,6 @@ func (db *mongodb) GetImpl() (impl any) {
 	return db.database
 }
 
-func (db *mongodb) Transaction(callback xdb.TransactionCallback) (err error) {
+func (db *mongodb) Transaction(ctx context.Context, callback xdb.TransactionCallback) (err error) {
 	return NotImplemented
 }
