@@ -32,6 +32,8 @@ func (s *mongoResolver) Name() string {
 }
 
 func (s *mongoResolver) Resolve(connName string, setting config.Config, opts ...xdb.Option) (dbObj interface{}, err error) {
+	InitMetrics()
+
 	cfg := contribxdb.NewConfig(connName)
 	err = setting.ScanTo(cfg.Cfg)
 	if err != nil {
@@ -62,6 +64,7 @@ func (s *mongoResolver) Resolve(connName string, setting config.Config, opts ...
 	}
 
 	return &mongodb{
+		connName: connName,
 		client:   client,
 		database: client.Database(databaseName),
 		cfg:      cfg,
