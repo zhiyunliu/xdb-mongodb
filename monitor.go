@@ -24,8 +24,9 @@ type spanKey struct {
 }
 
 type cacheItem struct {
-	span trace.Span
-	cmd  bson.Raw
+	spanName string
+	span     trace.Span
+	cmd      bson.Raw
 }
 
 type monitor struct {
@@ -64,6 +65,9 @@ func (m *monitor) Started(ctx context.Context, evt *event.CommandStartedEvent) {
 		spanName = collection + "."
 	}
 	spanName += evt.CommandName
+
+	meter.Incr(m.cfg.ConnName, spanName)
+
 	opts := []trace.SpanStartOption{
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(m.commandStartedTraceAttrs(evt, collection)...),
@@ -75,8 +79,9 @@ func (m *monitor) Started(ctx context.Context, evt *event.CommandStartedEvent) {
 			ConnectionID: evt.ConnectionID,
 		},
 		cacheItem{
-			span: span,
-			cmd:  evt.Command,
+			spanName: spanName,
+			span:     span,
+			cmd:      evt.Command,
 		},
 	)
 }
@@ -105,6 +110,7 @@ func (m *monitor) Finished(ctx context.Context, evt *event.CommandFinishedEvent,
 		item.span.SetStatus(codes.Error, err.Error())
 	}
 	item.span.End()
+	meter.Decr(m.cfg.ConnName, item.spanName)
 
 	m.printSlowQuery(ctx, evt.RequestID, evt.Duration, evt.CommandName, item.cmd)
 

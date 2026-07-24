@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/zhiyunliu/glue/global"
 	"github.com/zhiyunliu/glue/metrics"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -17,7 +16,7 @@ var (
 )
 
 type Metrics struct {
-	RequestCounter metrics.Int64Counter `metric:"req_total"  `
+	RequestCounter metrics.Int64UpDownCounter `metric:"cur_proc"  `
 }
 
 func InitMetrics() (err error) {
@@ -29,9 +28,16 @@ func InitMetrics() (err error) {
 	return err
 }
 
-func (m *Metrics) IncRequest(connName string) {
+func (m *Metrics) Incr(connName, spanName string) {
 	if m.RequestCounter == nil {
 		return
 	}
-	m.RequestCounter.Add(context.Background(), 1, metric.WithAttributes(attribute.String("conn", connName), attribute.String("srv", global.AppName)))
+	m.RequestCounter.Add(context.Background(), 1, metric.WithAttributes(attribute.String("conn", connName), attribute.String("span", spanName)))
+}
+
+func (m *Metrics) Decr(connName, spanName string) {
+	if m.RequestCounter == nil {
+		return
+	}
+	m.RequestCounter.Add(context.Background(), -1, metric.WithAttributes(attribute.String("conn", connName), attribute.String("span", spanName)))
 }

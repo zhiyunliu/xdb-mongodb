@@ -91,14 +91,9 @@ func (db *mongodb) Close() (err error) {
 }
 
 func (db *mongodb) GetImpl() (impl any) {
-	db.IncRequest()
 	return db.database
 }
 
 func (db *mongodb) Transaction(ctx context.Context, callback xdb.TransactionCallback) (err error) {
 	return NotImplemented
-}
-
-func (db *mongodb) IncRequest() {
-	meter.IncRequest(db.connName)
 }
