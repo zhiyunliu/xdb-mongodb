@@ -14,6 +14,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 
 	cmap "github.com/orcaman/concurrent-map/v2"
+	"github.com/zhiyunliu/glue/xdb"
 	"go.mongodb.org/mongo-driver/bson"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
@@ -36,6 +37,7 @@ type monitor struct {
 
 	cfg      *monitorConfig
 	cmdCache cmap.ConcurrentMap[spanKey, cacheItem]
+	meter    *xdb.Metrics
 }
 
 func NewMonitor(cfg *monitorConfig) *event.CommandMonitor {
@@ -43,6 +45,7 @@ func NewMonitor(cfg *monitorConfig) *event.CommandMonitor {
 	shardCnt := int64(cmap.SHARD_COUNT)
 
 	m := &monitor{
+		meter:          xdb.GetMetrics(cfg.proto),
 		TracerProvider: otel.GetTracerProvider(),
 		cfg:            cfg,
 		cmdCache: cmap.NewWithCustomShardingFunction[spanKey, cacheItem](func(key spanKey) uint32 {
@@ -66,7 +69,7 @@ func (m *monitor) Started(ctx context.Context, evt *event.CommandStartedEvent) {
 	}
 	spanName += evt.CommandName
 
-	meter.Incr(m.cfg.ConnName, spanName)
+	m.meter.Incr(m.cfg.ConnName, spanName)
 
 	opts := []trace.SpanStartOption{
 		trace.WithSpanKind(trace.SpanKindClient),
@@ -110,10 +113,8 @@ func (m *monitor) Finished(ctx context.Context, evt *event.CommandFinishedEvent,
 		item.span.SetStatus(codes.Error, err.Error())
 	}
 	item.span.End()
-	meter.Decr(m.cfg.ConnName, item.spanName)
-
+	m.meter.Decr(m.cfg.ConnName, item.spanName)
 	m.printSlowQuery(ctx, evt.RequestID, evt.Duration, evt.CommandName, item.cmd)
-
 }
 
 func extractCollection(evt *event.CommandStartedEvent) (connName string, err error) {

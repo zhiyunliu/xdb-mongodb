@@ -15,5 +15,6 @@ type monitorConfig struct {
 	ConnName                 string
 	ShowQueryLog             bool
 	slowThreshold            time.Duration
+	proto                    string
 	logger                   xdb.Logger
 }

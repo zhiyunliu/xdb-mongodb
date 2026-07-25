@@ -34,6 +34,7 @@ func Test() error {
 var _ xdb.IDB = (*mongodb)(nil)
 
 type mongodb struct {
+	proto    string
 	connName string
 	cfg      *contribxdb.Setting
 	client   *mongo.Client
